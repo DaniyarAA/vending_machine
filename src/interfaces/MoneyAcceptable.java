@@ -1,5 +1,6 @@
 package interfaces;
 
-public interface moneyAcceptable {
-    
+public interface MoneyAcceptable {
+    int getAmount();
+    void setAmount(int amount);
 }
