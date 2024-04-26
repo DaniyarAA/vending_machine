@@ -1,4 +1,5 @@
 import enums.ActionLetter;
+import interfaces.MoneyAcceptable;
 import model.*;
 import util.UniversalArray;
 import util.UniversalArrayImpl;
@@ -9,7 +10,7 @@ public class AppRunner {
 
     private final UniversalArray<Product> products = new UniversalArrayImpl<>();
 
-    private final CoinAcceptor coinAcceptor;
+    private final MoneyAcceptable moneyAcceptor;
 
     private static boolean isExit = false;
 
@@ -22,7 +23,7 @@ public class AppRunner {
                 new Mars(ActionLetter.F, 80),
                 new Pistachios(ActionLetter.G, 130)
         });
-        coinAcceptor = new CoinAcceptor(100);
+        moneyAcceptor = new CardAcceptor(100);
     }
 
     public static void run() {
@@ -35,9 +36,11 @@ public class AppRunner {
     private void startSimulation() {
         print("В автомате доступны:");
         showProducts(products);
-
-        print("Монет на сумму: " + coinAcceptor.getAmount());
-
+        if(moneyAcceptor instanceof CoinAcceptor) {
+            print("Монет на сумму: " + moneyAcceptor.getAmount());
+        }else{
+            print("Баланс на карте: " + moneyAcceptor.getAmount());
+        }
         UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
         allowProducts.addAll(getAllowedProducts().toArray());
         chooseAction(allowProducts);
@@ -47,7 +50,7 @@ public class AppRunner {
     private UniversalArray<Product> getAllowedProducts() {
         UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
         for (int i = 0; i < products.size(); i++) {
-            if (coinAcceptor.getAmount() >= products.get(i).getPrice()) {
+            if (moneyAcceptor.getAmount() >= products.get(i).getPrice()) {
                 allowProducts.add(products.get(i));
             }
         }
@@ -60,14 +63,14 @@ public class AppRunner {
         print(" h - Выйти");
         String action = fromConsole().substring(0, 1);
         if ("a".equalsIgnoreCase(action)) {
-            coinAcceptor.setAmount(coinAcceptor.getAmount() + 10);
+            moneyAcceptor.setAmount(moneyAcceptor.getAmount() + 10);
             print("Вы пополнили баланс на 10");
             return;
         }
         try {
             for (int i = 0; i < products.size(); i++) {
                 if (products.get(i).getActionLetter().equals(ActionLetter.valueOf(action.toUpperCase()))) {
-                    coinAcceptor.setAmount(coinAcceptor.getAmount() - products.get(i).getPrice());
+                    moneyAcceptor.setAmount(moneyAcceptor.getAmount() - products.get(i).getPrice());
                     print("Вы купили " + products.get(i).getName());
                     break;
                 }
