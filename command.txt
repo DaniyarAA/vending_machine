@@ -15,3 +15,9 @@ git commit -m "Message"
 
 Отправка изменений:
 git push
+
+Переключение на ветку мастер:
+git checkout master
+
+Слияние веток:
+git merge home-work-25
